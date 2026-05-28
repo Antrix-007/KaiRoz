@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#070707"/>
+  <!-- Stylized K -->
+  <path d="M16 12 L26 12 L26 28 L40 12 L52 12 L36 30 L52 52 L40 52 L28 36 L26 38 L26 52 L16 52 Z" fill="#c8f135"/>
+  <!-- Tiny satellite dot -->
+  <circle cx="44" cy="18" r="2.2" fill="#c8f135"/>
+  <circle cx="44" cy="18" r="4.5" fill="none" stroke="#c8f135" stroke-width="1" opacity="0.5"/>
+</svg>

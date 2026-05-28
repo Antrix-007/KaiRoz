@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KaiRoz · Satellite Intelligence for India's Cotton Traders</title>
+  <meta name="description" content="KaiRoz delivers satellite-powered weekly price signals to India's cotton ginners and traders — straight to your WhatsApp. No broker bias. No guesswork." />
+  <meta name="theme-color" content="#070707" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="alternate icon" href="assets/logo.png" />
+  <link rel="apple-touch-icon" href="assets/logo.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="KaiRoz · Satellite Intelligence for India's Cotton Traders" />
+  <meta property="og:description" content="Weekly satellite-powered buy/wait signals for cotton on WhatsApp. 4–6 weeks ahead of the market." />
+  <meta property="og:image" content="assets/logo.png" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="KaiRoz · Satellite Intelligence for Cotton" />
+  <meta name="twitter:description" content="Weekly satellite-powered buy/wait signals for cotton on WhatsApp." />
+  <meta name="twitter:image" content="assets/logo.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #070707;
+      --card: #0f0f0f;
+      --border: #1a1a1a;
+      --green: #c8f135;
+      --white: #f2f2f2;
+      --muted: #555;
+      --dim: #222;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Instrument Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+    nav.scrolled {
+      background: rgba(7,7,7,0.95);
+      border-color: var(--border);
+      backdrop-filter: blur(12px);
+      padding: 12px 40px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      height: 44px;
+      width: auto;
+      display: block;
+    }
+    nav.scrolled .nav-logo img { height: 38px; }
+
+    .nav-cta {
+      background: var(--green);
+      color: #000;
+      padding: 9px 20px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: opacity 0.2s, transform 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 140px 40px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute;
+      top: -20%; left: -10%;
+      width: 70%; height: 70%;
+      background: radial-gradient(ellipse, rgba(200,241,53,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(200,241,53,0.08);
+      border: 1px solid rgba(200,241,53,0.2);
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 2px;
+      margin-bottom: 40px;
+      width: fit-content;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 10vw, 130px);
+      line-height: 0.95;
+      letter-spacing: 2px;
+      color: var(--white);
+      max-width: 900px;
+    }
+    .hero h1 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--green);
+      font-weight: 400;
+    }
+    .hero-sub {
+      margin-top: 32px;
+      font-size: 16px;
+      color: #888;
+      max-width: 520px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      margin-top: 48px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .btn-primary, .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: opacity 0.2s, transform 0.2s, border-color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+      border: 1px solid var(--green);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .btn-secondary:hover { border-color: #444; transform: translateY(-1px); }
+
+    /* STATS */
+    .stats {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    .stat {
+      padding: 36px 40px;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 52px;
+      letter-spacing: 1px;
+      color: var(--green);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    /* SECTIONS */
+    section { padding: 110px 40px; }
+    .section-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-tag::after {
+      content: '';
+      height: 1px;
+      width: 40px;
+      background: var(--dim);
+    }
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 6vw, 72px);
+      letter-spacing: 1px;
+      line-height: 1;
+      color: var(--white);
+    }
+    h2 em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--green);
+      font-weight: 400;
+    }
+
+    /* HOW IT WORKS */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    .how-card {
+      background: var(--bg);
+      padding: 40px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .how-card:hover { background: var(--card); }
+    .how-card::before {
+      content: attr(data-n);
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 80px;
+      color: rgba(200,241,53,0.05);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .how-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(200,241,53,0.2);
+      background: rgba(200,241,53,0.06);
+      border-radius: 4px;
+      margin-bottom: 22px;
+      color: var(--green);
+    }
+    .how-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .how-card p {
+      font-size: 13px;
+      color: #777;
+      line-height: 1.7;
+    }
+
+    /* SIGNAL */
+    .signal-section {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .signal-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .whatsapp-msg {
+      background: #1a2e1a;
+      border: 1px solid #2a452a;
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #aaddaa;
+      max-width: 360px;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(200,241,53,0.06);
+    }
+    .whatsapp-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a452a;
+    }
+    .wa-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #25D366;
+      animation: blink 2s infinite;
+    }
+    .wa-name {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .wa-time {
+      margin-left: auto;
+      font-size: 10px;
+      color: #4a6a4a;
+    }
+    .signal-label {
+      display: inline-block;
+      background: rgba(200,241,53,0.12);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+    .signal-right h2 { margin-bottom: 20px; }
+    .signal-right p {
+      color: #777;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 460px;
+    }
+
+    /* CONTACT / FORM */
+    .form-section { max-width: 720px; margin: 0 auto; }
+    .form-section h2 { margin-bottom: 16px; }
+    .form-section .lead {
+      color: #777;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+      max-width: 560px;
+    }
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 14px 16px;
+      font-size: 13px;
+      font-family: 'Instrument Sans', sans-serif;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--green);
+      background: #0c0c0c;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #333; }
+    .form-group select option { background: #111; color: var(--white); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .form-submit { grid-column: 1 / -1; margin-top: 8px; }
+    .form-submit button {
+      width: 100%;
+      background: var(--green);
+      color: #000;
+      border: none;
+      padding: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      font-family: 'Instrument Sans', sans-serif;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .form-submit button:hover { opacity: 0.9; transform: translateY(-1px); }
+    .form-note {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* SOCIAL */
+    .social-section {
+      border-top: 1px solid var(--border);
+      padding: 80px 40px;
+    }
+    .social-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .social-left h2 { margin-bottom: 16px; }
+    .social-left p {
+      color: #777;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 420px;
+    }
+    .social-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      border: 1px solid var(--border);
+      color: var(--white);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+      background: var(--card);
+    }
+    .social-link:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .social-link svg { width: 16px; height: 16px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo img { height: 32px; display: block; }
+    footer p { font-size: 12px; color: var(--muted); }
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+    footer a:hover { color: var(--green); }
+    .footer-links { display: flex; gap: 20px; }
+
+    /* REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* SELECTION */
+    ::selection { background: var(--green); color: #000; }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      nav.scrolled { padding: 10px 20px; }
+      .nav-logo img { height: 36px; }
+      .nav-cta { padding: 8px 14px; font-size: 11px; }
+      .hero { padding: 110px 20px 60px; }
+      section { padding: 70px 20px; }
+      .stat { padding: 26px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+      .signal-inner { grid-template-columns: 1fr; gap: 40px; }
+      .social-inner { grid-template-columns: 1fr; gap: 32px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 28px 22px; }
+      footer { padding: 28px 20px; flex-direction: column; text-align: center; }
+      .social-section { padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav" data-testid="site-nav">
+    <a href="#top" class="nav-logo" data-testid="nav-logo">
+      <img src="assets/logo.png" alt="KaiRoz" />
+    </a>
+    <a href="https://wa.me/917302223680?text=Hi%20KaiRoz%2C%20I%20want%20to%20know%20more%20about%20your%20cotton%20intelligence%20service"
+       class="nav-cta" target="_blank" rel="noopener" data-testid="nav-whatsapp-cta">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.854L0 24l6.334-1.51A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.374l-.36-.214-3.727.888.903-3.63-.235-.374A9.818 9.818 0 1112 21.818z"/>
+      </svg>
+      WhatsApp
+    </a>
+  </nav>
+
+  <span id="top"></span>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-grid"></div>
+
+    <div class="hero-tag" data-testid="hero-tag">Satellite Intelligence · India</div>
+
+    <h1 data-testid="hero-heading">
+      Know When To<br/>
+      Buy <em>Kapas.</em><br/>
+      Before The Market Does.
+    </h1>
+
+    <p class="hero-sub">
+      KaiRoz delivers weekly satellite-powered signals to cotton ginners and traders across Saurashtra — telling you whether to buy this week or wait. No broker bias. No guesswork.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://wa.me/917302223680?text=Hi%20KaiRoz%2C%20I%20want%20to%20join%20the%20pilot%20program"
+         class="btn-primary" target="_blank" rel="noopener" data-testid="hero-cta-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.854L0 24l6.334-1.51A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.374l-.36-.214-3.727.888.903-3.63-.235-.374A9.818 9.818 0 1112 21.818z"/>
+        </svg>
+        Join Free Pilot
+      </a>
+      <a href="#contact" class="btn-secondary" data-testid="hero-cta-secondary">
+        Share Your Insights →
+      </a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats reveal" data-testid="stats-bar">
+    <div class="stat">
+      <div class="stat-value">15L+</div>
+      <div class="stat-label">Cotton SMEs in India</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">₹5400Cr</div>
+      <div class="stat-label">Market Opportunity</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">5 Day</div>
+      <div class="stat-label">Satellite Revisit Cycle</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">4–6 Wk</div>
+      <div class="stat-label">Advance Price Signal</div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" data-testid="how-section">
+    <div class="section-tag">How It Works</div>
+    <h2>From <em>Orbit</em><br/>To Your WhatsApp.</h2>
+
+    <div class="how-grid reveal">
+      <div class="how-card" data-n="01">
+        <div class="how-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 20l8-8"/><path d="M14 6l4 4"/><rect x="14" y="2" width="8" height="8" rx="1" transform="rotate(45 18 6)"/><circle cx="6" cy="18" r="2"/><path d="M16 16l2 2"/><path d="M19 13l2 2"/>
+          </svg>
+        </div>
+        <h3>Satellite Observes</h3>
+        <p>Every 5 days, Sentinel and ISRO satellites scan Gujarat's cotton belt — measuring crop health, soil moisture, and sowing patterns from orbit.</p>
+      </div>
+      <div class="how-card" data-n="02">
+        <div class="how-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <h3>Signal Is Generated</h3>
+        <p>We combine satellite NDVI data, weather patterns, APMC arrival trends, and government policy signals into one composite intelligence score.</p>
+      </div>
+      <div class="how-card" data-n="03">
+        <div class="how-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+        </div>
+        <h3>You Receive the Alert</h3>
+        <p>Every Monday morning — a plain-language WhatsApp message in Gujarati or Hindi. Buy this week. Or wait. With a confidence score attached.</p>
+      </div>
+      <div class="how-card" data-n="04">
+        <div class="how-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-2 7 4 4 0 0 0 2 7v1a4 4 0 0 0 8 0v-1a4 4 0 0 0 2-7 4 4 0 0 0-2-7V6a4 4 0 0 0-4-4z"/>
+          </svg>
+        </div>
+        <h3>System Learns</h3>
+        <p>Every prediction is logged. Every outcome verified. The ML model retrains weekly — getting sharper with every season of real market data.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGNAL PREVIEW -->
+  <section class="signal-section" data-testid="signal-section">
+    <div class="signal-inner reveal">
+      <div class="signal-phone">
+        <div class="whatsapp-msg">
+          <div class="whatsapp-header">
+            <div class="wa-dot"></div>
+            <span class="wa-name">KAIROZ · KAPAS SIGNAL</span>
+            <span class="wa-time">Mon 8:00 AM</span>
+          </div>
+          <div class="signal-label">WEEKLY SIGNAL</div>
+          <br/>
+          સૌરાષ્ટ્ર કપાસ · 26 મે 2026<br/><br/>
+          🛰️ NDVI ↓ — 3 અઠ. ઘટ. (પાક તણાવ)<br/>
+          💧 જમીન ભેજ: 22% — ઓછો<br/>
+          📦 APMC આવક: ↓ 4,200 ક્વિ.<br/>
+          🌍 ICE ફ્યુચર્સ: +2.1% ↑<br/>
+          📋 સરકારી જોખમ: ઓછું<br/><br/>
+          <strong style="color:#c8f135; font-size:14px;">
+            ✅ ભલામણ: આ અઠ. ખરીદો
+          </strong><br/>
+          <strong>વિશ્વાસ સ્કોર: 73%</strong><br/><br/>
+          <span style="color:#4a6a4a; font-size:11px;">
+            — KaiRoz | Reply for questions
+          </span>
+        </div>
+      </div>
+
+      <div class="signal-right">
+        <div class="section-tag">Sample Signal</div>
+        <h2>What You<br/>Receive <em>Every</em><br/>Monday.</h2>
+        <p>
+          No jargon. No data dumps. Just one clear recommendation — in your language — backed by satellite intelligence that large commodity funds pay crores for.
+        </p>
+        <a href="https://wa.me/917302223680?text=Hi%20KaiRoz%2C%20I%20want%20to%20receive%20the%20free%20weekly%20signal"
+           class="btn-primary" target="_blank" rel="noopener" data-testid="signal-cta">
+          Get Free Signals →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT FORM -->
+  <section id="contact" data-testid="contact-section">
+    <div class="form-section reveal">
+      <div class="section-tag">Get In Touch</div>
+      <h2>Share Your<br/><em>Insights</em>.</h2>
+      <p class="lead">
+        Are you a cotton ginner, trader, or broker in Gujarat? Tell us what you'd want from a signal you actually trust — your feedback shapes the pilot.
+      </p>
+
+      <div class="form-card">
+        <!-- Replace GOOGLE_FORM_URL with your real Google Form share URL -->
+        <form action="GOOGLE_FORM_URL" method="GET" target="_blank" class="form-grid" data-testid="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your full name" required data-testid="form-name" />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" placeholder="+91 ..." required data-testid="form-phone" />
+          </div>
+          <div class="form-group">
+            <label for="business">Business Type</label>
+            <select id="business" name="business" required data-testid="form-business">
+              <option value="" disabled selected>Select one</option>
+              <option value="ginner">Ginner</option>
+              <option value="trader">Trader</option>
+              <option value="broker">Broker</option>
+              <option value="farmer">Farmer</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="location">Location / Mandi</label>
+            <input id="location" name="location" type="text" placeholder="e.g. Rajkot, Amreli" required data-testid="form-location" />
+          </div>
+          <div class="form-group full">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="What would you want from a signal you actually trust?" data-testid="form-message"></textarea>
+          </div>
+          <div class="form-submit">
+            <button type="submit" data-testid="form-submit">Send My Insights →</button>
+          </div>
+          <p class="form-note">We'll never share your details. Reply once on WhatsApp & we're connected.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL -->
+  <section class="social-section" data-testid="social-section">
+    <div class="social-inner reveal">
+      <div class="social-left">
+        <div class="section-tag">Follow Along</div>
+        <h2>Field Notes<br/>From The <em>Belt</em>.</h2>
+        <p>We post weekly field updates, satellite breakdowns, and unfiltered learnings from the cotton belt. Stay close to the work.</p>
+      </div>
+      <div class="social-row">
+        <!-- SOCIAL_PLACEHOLDER — replace # with your real profile URLs -->
+        <a href="https://wa.me/917302223680" class="social-link" target="_blank" rel="noopener" data-testid="social-whatsapp">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.854L0 24l6.334-1.51A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.374l-.36-.214-3.727.888.903-3.63-.235-.374A9.818 9.818 0 1112 21.818z"/></svg>
+          WhatsApp
+        </a>
+        <a href="#" class="social-link" target="_blank" rel="noopener" data-testid="social-linkedin">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="#" class="social-link" target="_blank" rel="noopener" data-testid="social-twitter">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X / Twitter
+        </a>
+        <a href="#" class="social-link" target="_blank" rel="noopener" data-testid="social-youtube">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer data-testid="site-footer">
+    <a href="#top" class="footer-logo" aria-label="KaiRoz">
+      <img src="assets/logo.png" alt="KaiRoz" />
+    </a>
+    <div class="footer-links">
+      <a href="#how">How It Works</a>
+      <a href="#contact">Contact</a>
+      <a href="https://wa.me/917302223680" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <p>© <span id="year"></span> KaiRoz · Satellite Intelligence · Made in India</p>
+  </footer>
+
+  <script>
+    // Nav scroll effect
+    const nav = document.getElementById('nav');
+    const onScroll = () => {
+      if (window.scrollY > 30) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Reveal-on-scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
